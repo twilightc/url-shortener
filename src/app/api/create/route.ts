@@ -43,9 +43,6 @@ export const POST = async (req: NextRequest) => {
       });
     });
 
-    console.log(result);
-
-
     return Response.json({
       ...result
     }, {

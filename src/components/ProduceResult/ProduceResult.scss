@@ -1,0 +1,18 @@
+.text-transition-enter{
+  opacity: 0;
+}
+
+.text-transition-enter-active{
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.text-transition-exit{
+  opacity: 1;
+}
+
+.text-transition-exit-active{
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+

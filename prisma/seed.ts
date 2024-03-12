@@ -21,7 +21,6 @@ async function main() {
       enrollTime: new Date(),
     },
   });
-  console.log({ alice, bob });
 }
 main()
   .then(async () => {
