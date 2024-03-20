@@ -11,8 +11,7 @@ export default function UrlForm() {
 
   const [urlCode, setUrlCode] = useState('');
 
-  // should i check whether url indeed avaliable or not?
-  // may add debounce effect/ usecallback(not so good?)
+  // check whether url is avaliable indeed
   const handleShortenUrl = async () => {
     setIsLoading(true);
 
@@ -22,19 +21,23 @@ export default function UrlForm() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: 123,
-        url: originUrl,
+        originUrl,
       }),
-      cache: 'no-store',
     });
 
     const data = (await result.json()) as {
+      id: string;
       shortenedUrl: string;
       urlCode: string;
       originalUrl: string;
       createDate: Date;
       expireDate: Date;
-      userId: number;
+      ogInfo: {
+        siteName: string;
+        title: string;
+        image: string;
+        description: string;
+      };
     };
 
     if (result.status === 200 && data) {
@@ -45,12 +48,12 @@ export default function UrlForm() {
   };
 
   return (
-    <div className="flex flex-col gap-[30px] max-w-[300px] w-[100%]">
+    <div className="flex flex-col gap-[30px] max-w-[500px] w-[100%]">
       <form
         className="grid gap-[10px]"
         onSubmit={(e) => {
           e.preventDefault();
-          setUrlCode('')
+          setUrlCode('');
           handleShortenUrl();
         }}
       >
@@ -73,12 +76,14 @@ export default function UrlForm() {
             type="submit"
             disabled={isLoading}
           >
-           <div className='flex items-center justify-center'>
-           {isLoading && (
-              <div className="animate-spin rounded-full h-[20px] w-[20px] mr-[6px] border-t-2 border-b-2 border-gray-900"></div>
-            )}
-            <span className='text-[#fff]'>{isLoading ? 'Processing...' : 'Shorten it'}</span>
-           </div>
+            <div className="flex items-center justify-center">
+              {isLoading && (
+                <div className="animate-spin rounded-full h-[20px] w-[20px] mr-[6px] border-t-2 border-b-2 border-gray-900"></div>
+              )}
+              <span className="text-[#fff]">
+                {isLoading ? 'Processing...' : 'Shorten it'}
+              </span>
+            </div>
           </button>
         </div>
       </form>
