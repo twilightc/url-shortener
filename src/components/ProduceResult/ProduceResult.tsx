@@ -1,11 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { apiUrl } from '../../utils';
 import './ProduceResult.scss';
 import { SwitchTransition, CSSTransition } from 'react-transition-group';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function ProduceResult({
   urlCode,
@@ -48,14 +46,14 @@ export default function ProduceResult({
       <div className="grid grid-cols-2 gap-[10px]">
         <div className="col-span-2 flex w-full gap-[10px] p-[10px] bg-white">
           <figure className="flex-1">
-            <Image
-              className="mx-auto"
-              width={170}
-              height={90}
-              loader={() => ogInfo?.image ?? ''}
-              src={ogInfo?.image ?? ''}
-              alt={'og-preview-image'}
-            ></Image>
+            <div
+              className="max-w-[170px] w-full h-full mx-auto"
+              style={{
+                backgroundImage: `url(${ogInfo?.image})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+              }}
+            ></div>
           </figure>
 
           <div className="flex-1">
