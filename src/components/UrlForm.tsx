@@ -9,7 +9,15 @@ export default function UrlForm() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [urlCode, setUrlCode] = useState('');
+  const [shortUrlInfo, setShortUrlInfo] = useState<{
+    urlCode?: string;
+    ogInfo?: {
+      title: string;
+      siteName: string;
+      image: string;
+      description: string;
+    };
+  } | null>(null);
 
   // check whether url is avaliable indeed
   const handleShortenUrl = async () => {
@@ -41,7 +49,20 @@ export default function UrlForm() {
     };
 
     if (result.status === 200 && data) {
-      setUrlCode(data.urlCode);
+      setShortUrlInfo({
+        urlCode: data.urlCode,
+        ogInfo: {
+          ...data.ogInfo,
+          title:
+            data.ogInfo.title.length > 15
+              ? data.ogInfo.title.substring(0, 14) + '...'
+              : data.ogInfo.title,
+          description:
+            data.ogInfo.description.length > 20
+              ? data.ogInfo.description.substring(0, 19) + '...'
+              : data.ogInfo.description,
+        },
+      });
     }
 
     setIsLoading(false);
@@ -53,7 +74,7 @@ export default function UrlForm() {
         className="grid gap-[10px]"
         onSubmit={(e) => {
           e.preventDefault();
-          setUrlCode('');
+          setShortUrlInfo(null);
           handleShortenUrl();
         }}
       >
@@ -88,7 +109,12 @@ export default function UrlForm() {
         </div>
       </form>
       {isLoading && <Loading></Loading>}
-      {urlCode && <ProduceResult urlCode={urlCode}></ProduceResult>}
+      {shortUrlInfo && (
+        <ProduceResult
+          urlCode={shortUrlInfo.urlCode}
+          ogInfo={shortUrlInfo.ogInfo}
+        ></ProduceResult>
+      )}
     </div>
   );
 }

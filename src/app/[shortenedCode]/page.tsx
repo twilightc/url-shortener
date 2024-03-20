@@ -3,8 +3,6 @@
 import { prisma } from '@/lib';
 import { redirect } from 'next/dist/client/components/navigation';
 import { kv } from '@vercel/kv';
-// import { createClient } from 'redis';
-
 
 export default async function ShortUrl({
   params,

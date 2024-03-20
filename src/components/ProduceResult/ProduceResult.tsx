@@ -4,14 +4,27 @@ import { useRef, useState } from 'react';
 import { apiUrl } from '../../utils';
 import './ProduceResult.scss';
 import { SwitchTransition, CSSTransition } from 'react-transition-group';
+import Link from 'next/link';
+import Image from 'next/image';
 
-export default function ProduceResult({ urlCode }: { urlCode: string }) {
+export default function ProduceResult({
+  urlCode,
+  ogInfo,
+}: {
+  urlCode?: string;
+  ogInfo?: {
+    title: string;
+    siteName: string;
+    image: string;
+    description: string;
+  };
+}) {
   const [isCopied, setIsCopied] = useState(false);
-  const shortUrlRef = useRef<HTMLInputElement>(null);
+  const shortUrlRef = useRef<HTMLAnchorElement>(null);
 
   const handleCopyToClickBoard = () => {
     if (shortUrlRef.current) {
-      navigator.clipboard.writeText(shortUrlRef.current.value);
+      navigator.clipboard.writeText(shortUrlRef.current.href);
       setIsCopied(true);
 
       setTimeout(() => {
@@ -23,23 +36,36 @@ export default function ProduceResult({ urlCode }: { urlCode: string }) {
   return (
     <div className="grid gap-[5px]">
       <div>Your short url is:</div>
-      <input
-        ref={shortUrlRef}
-        className="w-full h-[40px] rounded-[8px] px-[8px]"
-        type="text"
-        value={`${apiUrl}/` + urlCode}
-        readOnly
-      />
-      <div className="flex items-center justify-start gap-[10px]">
-        <a
-          className="p-[5px] bg-[#ffffff] border-[1px] border-solid border-[#087da8] text-[#087da8] rounded-[8px]"
-          href={`${apiUrl}/` + urlCode}
+      <div className="w-full h-[40px] leading-[40px] rounded-[8px] px-[8px] bg-[#fff]">
+        <Link
+          ref={shortUrlRef}
+          href={`${window.location.origin}/` + urlCode}
           target="_blank"
         >
-          Visit it
-        </a>
+          {`${window.location.origin}/` + urlCode}
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-[10px]">
+        <div className="col-span-2 flex w-full gap-[10px] p-[10px] bg-white">
+          <figure className="flex-1">
+            <Image
+              className="mx-auto"
+              width={170}
+              height={90}
+              loader={() => ogInfo?.image ?? ''}
+              src={ogInfo?.image ?? ''}
+              alt={'og-preview-image'}
+            ></Image>
+          </figure>
+
+          <div className="flex-1">
+            <figcaption> {ogInfo?.title} </figcaption>
+            <div> {ogInfo?.description} </div>
+            <div className="text-[rgb(110,102,102)]">{ogInfo?.siteName}</div>
+          </div>
+        </div>
         <button
-          className="h-full w-[200px] bg-[#1f8244] text-[#fff] rounded-[8px]"
+          className="col-span-2 h-[40px] w-[200px] bg-[#1f8244] text-[#fff] rounded-[8px]"
           onClick={handleCopyToClickBoard}
         >
           <SwitchTransition>
