@@ -38,7 +38,6 @@ export const POST = async (req: NextRequest) => {
           originalUrl: url,
           createDate: new Date(),
           expireDate: dayjs(new Date()).add(1, 'd').toDate(),
-          userId,
         },
       });
     });

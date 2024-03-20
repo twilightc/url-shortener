@@ -2,22 +2,19 @@
 
 import { prisma } from '@/lib';
 import { redirect } from 'next/dist/client/components/navigation';
-import { createClient } from 'redis';
+import { kv } from '@vercel/kv';
+// import { createClient } from 'redis';
+
 
 export default async function ShortUrl({
   params,
 }: {
   params: { shortenedCode: string };
 }) {
-  const redisClient = await createClient({ url: process.env.REDIS_URL })
-    .on('error', (err) => console.log('Redis Client Error', err))
-    .connect();
-
   const shortenedCode = params.shortenedCode ?? '';
 
-  const result = (await redisClient.get(`${shortenedCode}`)) ?? '';
+  const result = (await kv.get(`${shortenedCode}`)) ?? '';
   if (result !== '') {
-    redisClient.disconnect();
     redirect(`${result}`);
   } else {
     const getOriginalUrl = async () => {
@@ -30,12 +27,11 @@ export default async function ShortUrl({
     const result = await getOriginalUrl();
 
     if (result?.originalUrl) {
-      await redisClient.set(`${shortenedCode}`, `${result?.originalUrl}`, {
-        EX: 3600 * 6,
+      await kv.set(`${shortenedCode}`, `${result?.originalUrl}`, {
+        ex: 3600 * 6,
       });
     }
 
-    redisClient.disconnect();
     redirect(result?.originalUrl ?? '/');
   }
 }

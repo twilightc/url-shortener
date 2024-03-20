@@ -7,20 +7,20 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "lint-staged": {
     "*.{js, jsx,ts,tsx}": [
       "eslint --fix"
     ]
   },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "dependencies": {
-    "@prisma/client": "^5.10.2",
+    "@prisma/client": "^5.11.0",
     "@types/react-transition-group": "^4.4.10",
     "@types/valid-url": "^1.0.7",
+    "@vercel/kv": "^1.0.1",
+    "@vercel/postgres": "^0.7.2",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.10",
     "husky": "^9.0.11",

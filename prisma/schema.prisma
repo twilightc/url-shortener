@@ -4,21 +4,27 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model ShortenedUrl {
-  shortenedUrl     String   @id
-  urlCode String            @unique
-  originalUrl String
-  createDate  DateTime
-  expireDate  DateTime
-  userId      Int
+  id           String        @id @default(uuid())
+  shortenedUrl String
+  urlCode      String        @unique
+  originalUrl  String
+  createDate   DateTime
+  expireDate   DateTime
+  OpenGraphTag OpenGraphTag?
 }
 
-model User {
-  userId     Int      @id
-  name       String
-  email      String
-  enrollTime DateTime
+model OpenGraphTag {
+  id           String       @id @default(uuid())
+  url          String
+  title        String
+  description  String
+  image        String
+  siteName     String
+  shortenedUrl ShortenedUrl @relation(fields: [tagId], references: [id])
+  tagId        String       @unique
 }
