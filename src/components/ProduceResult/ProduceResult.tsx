@@ -34,7 +34,7 @@ export default function ProduceResult({
   return (
     <div className="grid gap-[5px]">
       <div>Your short url is:</div>
-      <div className="w-full h-[40px] leading-[40px] rounded-[8px] px-[8px] bg-[#fff]">
+      <div className="w-full h-[40px] leading-[40px] rounded-[8px] px-[8px] bg-[#fff] text-[#000]">
         <Link
           ref={shortUrlRef}
           href={`${window.location.origin}/` + urlCode}
@@ -56,7 +56,7 @@ export default function ProduceResult({
             ></div>
           </figure>
 
-          <div className="flex-1">
+          <div className="flex-1 text-[#000]">
             <figcaption> {ogInfo?.title} </figcaption>
             <div> {ogInfo?.description} </div>
             <div className="text-[rgb(110,102,102)]">{ogInfo?.siteName}</div>
