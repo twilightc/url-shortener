@@ -1,3 +1,4 @@
 import { apiUrl } from './apiUrl';
+import { urlBannedList } from './urlBannedList';
 
-export { apiUrl };
+export { apiUrl, urlBannedList };

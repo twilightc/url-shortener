@@ -6,13 +6,16 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint && tsc --noEmit",
     "prepare": "husky install",
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "lint-staged": {
     "*.{js, jsx,ts,tsx}": [
       "eslint --fix"
+    ],
+    "*.{ts,tsx}": [
+      "bash -c tsc"
     ]
   },
   "dependencies": {

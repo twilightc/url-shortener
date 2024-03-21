@@ -9,6 +9,8 @@ export default function UrlForm() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   const [shortUrlInfo, setShortUrlInfo] = useState<{
     urlCode?: string;
     ogInfo?: {
@@ -21,51 +23,64 @@ export default function UrlForm() {
 
   // check whether url is avaliable indeed
   const handleShortenUrl = async () => {
-    setIsLoading(true);
+    if(originUrl === ''){
+      setErrorMessage('url cannot be blank')
 
-    const result = await fetch('api/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        originUrl,
-      }),
-    });
-
-    const data = (await result.json()) as {
-      id: string;
-      shortenedUrl: string;
-      urlCode: string;
-      originalUrl: string;
-      createDate: Date;
-      expireDate: Date;
-      ogInfo: {
-        siteName: string;
-        title: string;
-        image: string;
-        description: string;
-      };
-    };
-
-    if (result.status === 200 && data) {
-      setShortUrlInfo({
-        urlCode: data.urlCode,
-        ogInfo: {
-          ...data.ogInfo,
-          title:
-            data.ogInfo.title.length > 15
-              ? data.ogInfo.title.substring(0, 14) + '...'
-              : data.ogInfo.title,
-          description:
-            data.ogInfo.description.length > 20
-              ? data.ogInfo.description.substring(0, 19) + '...'
-              : data.ogInfo.description,
-        },
-      });
+      return;
     }
 
-    setIsLoading(false);
+    setIsLoading(true);
+
+    try {
+      const result = await fetch('api/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          originUrl,
+        }),
+      });
+
+      if (result.ok && result.status === 200) {
+        const data = (await result.json()) as {
+          id: string;
+          shortenedUrl: string;
+          urlCode: string;
+          originalUrl: string;
+          createDate: Date;
+          expireDate: Date;
+          ogInfo: {
+            siteName: string;
+            title: string;
+            image: string;
+            description: string;
+          };
+        };
+
+        setShortUrlInfo({
+          urlCode: data.urlCode,
+          ogInfo: {
+            ...data.ogInfo,
+            title:
+              data.ogInfo.title.length > 15
+                ? data.ogInfo.title.substring(0, 14) + '...'
+                : data.ogInfo.title,
+            description:
+              data.ogInfo.description.length > 20
+                ? data.ogInfo.description.substring(0, 19) + '...'
+                : data.ogInfo.description,
+          },
+        });
+      } else {
+        const data = (await result.json()) as { err: {}; message: string };
+        setErrorMessage(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally{
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,6 +89,7 @@ export default function UrlForm() {
         className="grid gap-[10px]"
         onSubmit={(e) => {
           e.preventDefault();
+          setErrorMessage('');
           setShortUrlInfo(null);
           handleShortenUrl();
         }}
@@ -109,6 +125,9 @@ export default function UrlForm() {
         </div>
       </form>
       {isLoading && <Loading></Loading>}
+      {errorMessage !== '' && (
+        <div className="text-[20px] text-[#ff0000]">{errorMessage}</div>
+      )}
       {shortUrlInfo && (
         <ProduceResult
           urlCode={shortUrlInfo.urlCode}

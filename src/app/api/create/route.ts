@@ -3,6 +3,7 @@ import { generateShortUrl, prisma } from '@/lib';
 import { isWebUri } from 'valid-url';
 import { NextRequest } from 'next/server';
 import run from 'open-graph-scraper';
+import { urlBannedList } from '@/src/utils';
 
 const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
   const findResult = await prisma.dataAnalytic.findUnique({
@@ -25,24 +26,36 @@ const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
   });
 
   const currentTime = dayjs(new Date());
-  const matchedUrls = shortUrls1.filter((info) => {
-    // console.log(currentTime.diff(dayjs(info.createDate), 'h'));
-
-    return currentTime.diff(dayjs(info.createDate), 'm') > 1;
-  });
+  const matchedUrls = shortUrls1.filter(
+    (info) => currentTime.diff(dayjs(info.createDate), 'day') < 1
+  );
 
   return matchedUrls.length < 3;
 };
 
 export const POST = async (req: NextRequest) => {
   if (req.method !== 'POST') {
-    return Response.json('only permit POST method', { status: 405 });
+    return Response.json(
+      { err: {}, message: 'only permit POST method' },
+      { status: 405 }
+    );
   }
 
   const { originUrl: url } = (await req.json()) as { originUrl: string };
 
   if (!isWebUri(url)) {
-    return Response.json('incorrect format', { status: 400 });
+    return Response.json(
+      { err: {}, message: 'incorrect url format' },
+      { status: 400 }
+    );
+  }
+
+  // another case: check if url can be visited indeed, if not, return status code 422 also
+  if (urlBannedList.some((bannedUrl) => url.includes(bannedUrl))) {
+    return Response.json(
+      { err: {}, message: 'url domain banned' },
+      { status: 422 }
+    );
   }
 
   const ipAddress =
@@ -51,12 +64,26 @@ export const POST = async (req: NextRequest) => {
   // ONLY for development
   // should save all info about header info to prevent fake header
   // more info: https://devco.re/blog/2014/06/19/client-ip-detection/
-  const checkResult = await checkIfCanGenrateNewUrl(ipAddress);
+  try {
+    const checkResult = await checkIfCanGenrateNewUrl(ipAddress);
 
-  if (!checkResult) {
+    if (!checkResult) {
+      return Response.json(
+        {
+          err: {},
+          message:
+            'only can produce 3 short url per day, please contact author for more info',
+        },
+        { status: 429 }
+      );
+    }
+  } catch (err) {
     return Response.json(
-      'request times exceed limit, please contact author for more info',
-      { status: 429 }
+      {
+        err: {},
+        message: 'error occured during url validation',
+      },
+      { status: 500 }
     );
   }
 
@@ -171,9 +198,13 @@ export const POST = async (req: NextRequest) => {
     return Response.json(result, {
       status: 200,
     });
-  } catch (error) {
+  } catch (err) {
     return Response.json(
-      'error occured during transaction, operation has been rolled back',
+      {
+        err,
+        message:
+          'error occured during transaction, operation has been rolled back',
+      },
       { status: 500 }
     );
   }
