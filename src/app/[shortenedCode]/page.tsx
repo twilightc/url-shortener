@@ -27,7 +27,7 @@ const findThenSaveOgInfoToKv = async (
 ) => {
   const urlOgInfo = await prisma.openGraphTag.findUnique({
     where: {
-      tagId: result?.id ?? '',
+      shortenedUrlId: result?.id ?? '',
     },
   });
 
@@ -70,7 +70,7 @@ export async function generateMetadata({
 
     const urlOgInfo = await prisma.openGraphTag.findUnique({
       where: {
-        tagId: originalUrl?.id ?? '',
+        shortenedUrlId: originalUrl?.id ?? '',
       },
     });
 
