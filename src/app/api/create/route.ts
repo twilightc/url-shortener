@@ -4,6 +4,36 @@ import { isWebUri } from 'valid-url';
 import { NextRequest } from 'next/server';
 import run from 'open-graph-scraper';
 
+const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
+  const findResult = await prisma.dataAnalytic.findUnique({
+    where: {
+      ip: ipAddress,
+    },
+  });
+
+  if (!findResult) {
+    return true;
+  }
+
+  const shortUrls1 = await prisma.shortenedUrl.findMany({
+    where: {
+      dataAnalyticId: findResult.id,
+    },
+    orderBy: {
+      createDate: 'desc',
+    },
+  });
+
+  const currentTime = dayjs(new Date());
+  const matchedUrls = shortUrls1.filter((info) => {
+    // console.log(currentTime.diff(dayjs(info.createDate), 'h'));
+
+    return currentTime.diff(dayjs(info.createDate), 'm') > 1;
+  });
+
+  return matchedUrls.length < 3;
+};
+
 export const POST = async (req: NextRequest) => {
   if (req.method !== 'POST') {
     return Response.json('only permit POST method', { status: 405 });
@@ -15,10 +45,24 @@ export const POST = async (req: NextRequest) => {
     return Response.json('incorrect format', { status: 400 });
   }
 
+  const ipAddress =
+    req.headers.get('x-forwarded-for')?.split(',').at(0)?.trim() ?? '';
+
+  // ONLY for development
+  // should save all info about header info to prevent fake header
+  // more info: https://devco.re/blog/2014/06/19/client-ip-detection/
+  const checkResult = await checkIfCanGenrateNewUrl(ipAddress);
+
+  if (!checkResult) {
+    return Response.json(
+      'request times exceed limit, please contact author for more info',
+      { status: 429 }
+    );
+  }
+
   const host = req.headers.get('host') ?? '';
   const { shortUrlCode, fullShortenUrl } = generateShortUrl(host);
 
-  // if url has existed then return it, or create a new one
   try {
     const result = await prisma.$transaction(async (tx) => {
       const existedUrl = await tx.shortenedUrl.findFirst({
@@ -30,7 +74,7 @@ export const POST = async (req: NextRequest) => {
       if (existedUrl) {
         const existedUrlWithOgInfo = await tx.openGraphTag.findFirst({
           where: {
-            tagId: existedUrl.id,
+            shortenedUrlId: existedUrl.id,
           },
         });
 
@@ -46,6 +90,32 @@ export const POST = async (req: NextRequest) => {
         };
       }
 
+      let dataAnalytic = await tx.dataAnalytic.findUnique({
+        where: {
+          ip: ipAddress,
+        },
+      });
+
+      if (dataAnalytic) {
+        await tx.dataAnalytic.update({
+          where: {
+            ip: ipAddress,
+          },
+          data: {
+            createTimes: {
+              increment: 1,
+            },
+          },
+        });
+      } else {
+        dataAnalytic = await tx.dataAnalytic.create({
+          data: {
+            createTimes: 1,
+            ip: ipAddress,
+          },
+        });
+      }
+
       const newShortUrl = await tx.shortenedUrl.create({
         data: {
           shortenedUrl: fullShortenUrl,
@@ -53,6 +123,11 @@ export const POST = async (req: NextRequest) => {
           originalUrl: url,
           createDate: new Date(),
           expireDate: dayjs(new Date()).add(1, 'd').toDate(),
+          DataAnalytic: {
+            connect: {
+              id: dataAnalytic?.id,
+            },
+          },
         },
       });
 
@@ -70,7 +145,7 @@ export const POST = async (req: NextRequest) => {
             siteName: rawOgData?.ogSiteName ?? '',
             description: rawOgData?.ogDescription ?? '',
             image: (rawOgData?.ogImage ?? [])[0].url,
-            shortenedUrl: {
+            ShortenedUrl: {
               connect: {
                 id: newShortUrl.id,
               },
