@@ -1,4 +1,6 @@
 import { apiUrl } from './apiUrl';
 import { urlBannedList } from './urlBannedList';
 
-export { apiUrl, urlBannedList };
+import { GENERATE_UPPERBOUND } from './shortUrlLimitation';
+
+export { apiUrl, urlBannedList, GENERATE_UPPERBOUND };

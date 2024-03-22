@@ -93,7 +93,7 @@ export default function ShortenUrlForm() {
   };
 
   return (
-    <div className="flex flex-col gap-[30px] max-w-[500px] w-[100%]">
+    <div className="flex flex-col gap-[30px] max-w-[600px] w-[100%]">
       <form
         className="grid gap-[10px]"
         onSubmit={(e) => {

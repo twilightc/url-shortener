@@ -1,7 +1,10 @@
 import { isWebUri } from 'valid-url';
 import { NextRequest } from 'next/server';
-import { urlBannedList } from '@/src/utils';
-import { checkIfCanGenrateNewUrl, createShortUrl } from '@/src/services/createService';
+import { GENERATE_UPPERBOUND, urlBannedList } from '@/src/utils';
+import {
+  checkIfCanGenrateNewUrl,
+  createShortUrl,
+} from '@/src/services/createService';
 
 export const POST = async (req: NextRequest) => {
   if (req.method !== 'POST') {
@@ -40,8 +43,7 @@ export const POST = async (req: NextRequest) => {
       return Response.json(
         {
           err: {},
-          message:
-            'you can only produce 3 short url per day, please contact author for more info',
+          message: `you can only produce ${GENERATE_UPPERBOUND} short url per day, please contact author for more info`,
         },
         { status: 429 }
       );
@@ -59,7 +61,7 @@ export const POST = async (req: NextRequest) => {
   const host = req.headers.get('host') ?? '';
 
   try {
-    const result = await createShortUrl(url,ipAddress,host);
+    const result = await createShortUrl(url, ipAddress, host);
 
     return Response.json(result, {
       status: 200,

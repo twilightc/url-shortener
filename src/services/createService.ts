@@ -1,8 +1,9 @@
 import { generateShortUrl, prisma } from '@/lib';
 import dayjs from 'dayjs';
 import run from 'open-graph-scraper';
+import { GENERATE_UPPERBOUND } from '../utils';
 
-const GENERATE_UPPERBOUND = 5;
+
 
 export const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
   const findResult = await prisma.dataAnalytic.findUnique({
