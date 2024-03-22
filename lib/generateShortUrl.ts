@@ -1,8 +1,10 @@
-import { customAlphabet } from 'nanoid'
+import { customAlphabet } from 'nanoid';
+import 'server-only';
 
-const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
-const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 const generateShortUrl = (host: string) => {
   // produce short url--it should be unpredictable and unique (base62, assume take the former six alphebets)
@@ -10,8 +12,8 @@ const generateShortUrl = (host: string) => {
   const shortUrlCode = customAlphabet(alphabet, 6)();
   return {
     shortUrlCode,
-    fullShortenUrl: `${protocol}://${host}/api/${shortUrlCode}`
-  }
-}
+    fullShortenUrl: `${protocol}://${host}/api/${shortUrlCode}`,
+  };
+};
 
 export default generateShortUrl;

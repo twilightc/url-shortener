@@ -72,7 +72,7 @@ export const POST = async (req: NextRequest) => {
         {
           err: {},
           message:
-            'only can produce 3 short url per day, please contact author for more info',
+            'you can only produce 3 short url per day, please contact author for more info',
         },
         { status: 429 }
       );

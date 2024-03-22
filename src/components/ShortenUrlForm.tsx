@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import ProduceResult from './ProduceResult/ProduceResult';
 import Loading from './Loading';
+import { createShortUrl } from '../api/client';
 
-export default function UrlForm() {
+export default function ShortenUrlForm() {
   const [originUrl, setOriginUrl] = useState('');
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -21,42 +22,49 @@ export default function UrlForm() {
     };
   } | null>(null);
 
+  const checkIsValidUrl = () => {
+    if (originUrl === '') {
+      setErrorMessage('url cannot be blank');
+      return false;
+    }
+
+    const urlPattern =
+      /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+
+    if (!urlPattern.test(originUrl)) {
+      setErrorMessage('url format incorrect');
+      return false;
+    }
+
+    return true;
+  };
+
   // check whether url is avaliable indeed
   const handleShortenUrl = async () => {
-    if(originUrl === ''){
-      setErrorMessage('url cannot be blank')
-
+    if (!checkIsValidUrl()) {
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const result = await fetch('api/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          originUrl,
-        }),
-      });
-
-      if (result.ok && result.status === 200) {
-        const data = (await result.json()) as {
-          id: string;
-          shortenedUrl: string;
-          urlCode: string;
-          originalUrl: string;
-          createDate: Date;
-          expireDate: Date;
-          ogInfo: {
-            siteName: string;
-            title: string;
-            image: string;
-            description: string;
-          };
+      const result = await createShortUrl<{
+        id: string;
+        shortenedUrl: string;
+        urlCode: string;
+        originalUrl: string;
+        createDate: Date;
+        expireDate: Date;
+        ogInfo: {
+          siteName: string;
+          title: string;
+          image: string;
+          description: string;
         };
+      }>(originUrl);
+
+      if (result.isSuccess) {
+        const data = result.data;
 
         setShortUrlInfo({
           urlCode: data.urlCode,
@@ -73,12 +81,13 @@ export default function UrlForm() {
           },
         });
       } else {
-        const data = (await result.json()) as { err: {}; message: string };
-        setErrorMessage(data.message);
+        setErrorMessage(result.message);
       }
     } catch (error) {
       console.log(error);
-    } finally{
+
+      setErrorMessage('unexpected error occured.');
+    } finally {
       setIsLoading(false);
     }
   };
