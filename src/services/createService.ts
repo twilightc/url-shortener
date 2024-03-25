@@ -46,21 +46,21 @@ export const createShortUrl = async (
     });
 
     if (existedUrl) {
-      // const existedUrlWithOgInfo = await tx.openGraphTag.findFirst({
-      //   where: {
-      //     shortenedUrlId: existedUrl.id,
-      //   },
-      // });
+      const existedUrlWithOgInfo = await tx.openGraphTag.findFirst({
+        where: {
+          shortenedUrlId: existedUrl.id,
+        },
+      });
 
       return {
         ...existedUrl,
-        // ogInfo: {
-        //   url: existedUrlWithOgInfo?.url || '',
-        //   title: existedUrlWithOgInfo?.title || '',
-        //   siteName: existedUrlWithOgInfo?.siteName || '',
-        //   image: existedUrlWithOgInfo?.image || '',
-        //   description: existedUrlWithOgInfo?.description || '',
-        // },
+        ogInfo: {
+          url: existedUrlWithOgInfo?.url || '',
+          title: existedUrlWithOgInfo?.title || '',
+          siteName: existedUrlWithOgInfo?.siteName || '',
+          image: existedUrlWithOgInfo?.image || '',
+          description: existedUrlWithOgInfo?.description || '',
+        },
       };
     }
 
