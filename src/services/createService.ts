@@ -118,7 +118,8 @@ export const createShortUrl = async (
           title: rawOgData?.ogTitle ?? '',
           siteName: rawOgData?.ogSiteName ?? '',
           description: rawOgData?.ogDescription ?? '',
-          image: (rawOgData?.ogImage ?? [])[0].url,
+          // image: (rawOgData?.ogImage ?? [])[0].url,
+          image: (rawOgData?.ogImage ?? []).at(0)?.url ?? '',
           ShortenedUrl: {
             connect: {
               id: newShortUrl.id,
