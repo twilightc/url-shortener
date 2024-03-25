@@ -23,17 +23,17 @@ model ShortenedUrl {
   createDate     DateTime
   expireDate     DateTime
   OpenGraphTag   OpenGraphTag?
-  DataAnalytic   DataAnalytic?  @relation(fields: [dataAnalyticId], references: [id])
+  DataAnalytic   DataAnalytic  @relation(fields: [dataAnalyticId], references: [id])
   dataAnalyticId String
 }
 
 model OpenGraphTag {
-  id             String        @id @default(uuid())
+  id             String       @id @default(uuid())
   url            String
   title          String
   description    String
   image          String
   siteName       String
-  ShortenedUrl   ShortenedUrl? @relation(fields: [shortenedUrlId], references: [id])
-  shortenedUrlId String        @unique
+  ShortenedUrl   ShortenedUrl @relation(fields: [shortenedUrlId], references: [id])
+  shortenedUrlId String       @unique
 }

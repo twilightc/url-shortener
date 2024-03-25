@@ -3,8 +3,6 @@ import dayjs from 'dayjs';
 import run from 'open-graph-scraper';
 import { GENERATE_UPPERBOUND } from '../utils';
 
-
-
 export const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
   const findResult = await prisma.dataAnalytic.findUnique({
     where: {
@@ -16,7 +14,7 @@ export const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
     return true;
   }
 
-  const shortUrls1 = await prisma.shortenedUrl.findMany({
+  const shortUrls = await prisma.shortenedUrl.findMany({
     where: {
       dataAnalyticId: findResult.id,
     },
@@ -26,7 +24,7 @@ export const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
   });
 
   const currentTime = dayjs(new Date());
-  const matchedUrls = shortUrls1.filter(
+  const matchedUrls = shortUrls.filter(
     (info) => currentTime.diff(dayjs(info.createDate), 'day') < 1
   );
 
@@ -120,7 +118,8 @@ export const createShortUrl = async (
           title: rawOgData?.ogTitle ?? '',
           siteName: rawOgData?.ogSiteName ?? '',
           description: rawOgData?.ogDescription ?? '',
-          image: (rawOgData?.ogImage ?? [])[0].url,
+          // image: (rawOgData?.ogImage ?? [])[0].url,
+          image: (rawOgData?.ogImage ?? []).at(0)?.url ?? '',
           ShortenedUrl: {
             connect: {
               id: newShortUrl.id,
