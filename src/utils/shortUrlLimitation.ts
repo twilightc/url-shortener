@@ -1,1 +1,1 @@
-export const GENERATE_UPPERBOUND = 5;
+export const GENERATE_UPPERBOUND = 3;

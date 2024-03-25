@@ -56,12 +56,13 @@ export default function ShortenUrlForm() {
         createDate: Date;
         expireDate: Date;
         dataAnalyticId: string;
-        // ogInfo: {
-        //   siteName: string;
-        //   title: string;
-        //   image: string;
-        //   description: string;
-        // };
+        ogInfo: {
+          url: string;
+          siteName: string;
+          title: string;
+          image: string;
+          description: string;
+        };
       }>(originUrl);
 
       if (result.isSuccess) {
@@ -69,17 +70,17 @@ export default function ShortenUrlForm() {
 
         setShortUrlInfo({
           urlCode: data.urlCode,
-          // ogInfo: {
-          //   ...data.ogInfo,
-          //   title:
-          //     data.ogInfo.title.length > 15
-          //       ? data.ogInfo.title.substring(0, 14) + '...'
-          //       : data.ogInfo.title,
-          //   description:
-          //     data.ogInfo.description.length > 20
-          //       ? data.ogInfo.description.substring(0, 19) + '...'
-          //       : data.ogInfo.description,
-          // },
+          ogInfo: {
+            ...data.ogInfo,
+            title:
+              data.ogInfo.title.length > 15
+                ? data.ogInfo.title.substring(0, 14) + '...'
+                : data.ogInfo.title,
+            description:
+              data.ogInfo.description.length > 20
+                ? data.ogInfo.description.substring(0, 19) + '...'
+                : data.ogInfo.description,
+          },
         });
       } else {
         setErrorMessage(result.message);
