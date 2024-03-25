@@ -48,21 +48,21 @@ export const createShortUrl = async (
     });
 
     if (existedUrl) {
-      const existedUrlWithOgInfo = await tx.openGraphTag.findFirst({
-        where: {
-          shortenedUrlId: existedUrl.id,
-        },
-      });
+      // const existedUrlWithOgInfo = await tx.openGraphTag.findFirst({
+      //   where: {
+      //     shortenedUrlId: existedUrl.id,
+      //   },
+      // });
 
       return {
         ...existedUrl,
-        ogInfo: {
-          url: existedUrlWithOgInfo?.url || '',
-          title: existedUrlWithOgInfo?.title || '',
-          siteName: existedUrlWithOgInfo?.siteName || '',
-          image: existedUrlWithOgInfo?.image || '',
-          description: existedUrlWithOgInfo?.description || '',
-        },
+        // ogInfo: {
+        //   url: existedUrlWithOgInfo?.url || '',
+        //   title: existedUrlWithOgInfo?.title || '',
+        //   siteName: existedUrlWithOgInfo?.siteName || '',
+        //   image: existedUrlWithOgInfo?.image || '',
+        //   description: existedUrlWithOgInfo?.description || '',
+        // },
       };
     }
 
@@ -114,30 +114,30 @@ export const createShortUrl = async (
     });
 
     if (rawOgData?.ogTitle) {
-      const newOgData = await tx.openGraphTag.create({
-        data: {
-          url: rawOgData?.ogUrl ?? '',
-          title: rawOgData?.ogTitle ?? '',
-          siteName: rawOgData?.ogSiteName ?? '',
-          description: rawOgData?.ogDescription ?? '',
-          image: (rawOgData?.ogImage ?? [])[0].url,
-          ShortenedUrl: {
-            connect: {
-              id: newShortUrl.id,
-            },
-          },
-        },
-      });
+      // const newOgData = await tx.openGraphTag.create({
+      //   data: {
+      //     url: rawOgData?.ogUrl ?? '',
+      //     title: rawOgData?.ogTitle ?? '',
+      //     siteName: rawOgData?.ogSiteName ?? '',
+      //     description: rawOgData?.ogDescription ?? '',
+      //     image: (rawOgData?.ogImage ?? [])[0].url,
+      //     ShortenedUrl: {
+      //       connect: {
+      //         id: newShortUrl.id,
+      //       },
+      //     },
+      //   },
+      // });
 
       return {
         ...newShortUrl,
-        ogInfo: {
-          url: newOgData.url,
-          siteName: newOgData.siteName,
-          title: newOgData.title,
-          image: newOgData.image,
-          description: newOgData.description,
-        },
+        // ogInfo: {
+        //   url: newOgData.url,
+        //   siteName: newOgData.siteName,
+        //   title: newOgData.title,
+        //   image: newOgData.image,
+        //   description: newOgData.description,
+        // },
       };
     }
 
