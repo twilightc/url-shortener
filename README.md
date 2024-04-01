@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# URL-Shortener
 
-## Getting Started
+### [Demo](https://test-url-shortener.vercel.app/ "shorturl demo")
+A simple URL shortener built with Next.js 14.
+![alt text](image-1.png)
 
-First, run the development server:
+After the short URL has been created, when trying to paste it into application like Teams, the link will provide
+OpenGraph information.
+![alt text](image-2.png)
 
+## Features
+* Nextjs 14 (App Router)
+* Vercel
+* Prisma
+* PostgreSQL
+* Redis (aka kv in Project)
+
+Here we use vercel serverless function, which means
+you don't need to build database locally.
+
+
+## Getting started
+
+After clone to your repository, run:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then check [prisma doc](https://github.com/prisma/prisma "prisma document") and [next doc](https://nextjs.org/learn-pages-router/basics/deploying-nextjs-app/deploy "deploy to vercel")
+to learn how to manipulate and manage your db on vercel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+During development, use
+```bash
+npx prisma client
+```
+this can help you modify your data in vercel without using SQL in simple cases.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Notice
 
-## Learn More
+1. Remove bash command may cause tsc compilation
+to some issues, see: [Lint-staged ignore tsconfig.json when executing tsc](https://tychang9527.notion.site/Lint-staged-ignore-tsconfig-json-when-executing-tsc-0959c238053643ee8c08d17810f0dfc9?pvs=74 "lint-staged setting")
 
-To learn more about Next.js, take a look at the following resources:
+    ![alt text](image.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. If you can run program on local normally, but usually get status code `504` or `500` on production(i.e. vercel), this may because your http(s) request has reached max duration, see: [max-duration](https://vercel.com/docs/functions/runtimes#max-duration "max duration")
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. Since the project will retrieve og info from original site, it may leads status code `500` if you try to shorten URLs that need authorization or forbid program to get OpenGraph metadata.
 
-## Deploy on Vercel
+   In this condition, you may abort `open-graph-scraper` and extract og info from original URL by yourself, since `open-graph-scraper` have wrapped response, it may difficult to extract http status code we want.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   Finally, use library like [p-retry](https://github.com/sindresorhus/p-retry 'p-retry') to handle refetch part,
+   and produce shoertened URL without og info as an alternative.
