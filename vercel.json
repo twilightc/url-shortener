@@ -3,5 +3,11 @@
     "app/api/**/*": {
       "maxDuration": 10
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/server/deleteExpiredUrl",
+      "schedule": "*/3 * * * *"
+    }
+  ]
 }
