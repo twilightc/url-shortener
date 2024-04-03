@@ -38,7 +38,7 @@ export const createShortUrl = async (
 ) => {
   const { shortUrlCode, fullShortenUrl } = generateShortUrl(host);
 
-  return await prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx) => {
     const existedUrl = await tx.shortenedUrl.findFirst({
       where: {
         originalUrl: url,

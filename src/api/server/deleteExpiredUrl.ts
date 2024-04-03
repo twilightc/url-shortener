@@ -2,7 +2,7 @@ import { prisma } from '@/lib';
 
 export async function deleteExpiredUrls() {
   try {
-    await prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx) => {
       const currentTime = new Date();
       // only for DEVELOPMENT test
       const expiredUrls = await tx.shortenedUrl.findMany({

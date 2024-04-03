@@ -6,8 +6,8 @@
   },
   "crons": [
     {
-      "path": "/api/server/deleteExpiredUrl",
-      "schedule": "0 19 * * *"
+      "path": "/api/crons/",
+      "schedule": "30 11 * * *"
     }
   ]
 }
