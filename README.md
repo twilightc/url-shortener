@@ -3,10 +3,11 @@
 ### [Demo](https://test-url-shortener.vercel.app/ 'shorturl demo')
 
 A simple URL shortener built with Next.js 14.
+![alt text](/src/assets/imgs/image.png)
 
 After the short URL has been created, when trying to paste it into application like Teams, the link will provide
 OG(Open Graph) information.
-
+![alt text](/src/assets/imgs/image-1.png)
 ## Features
 
 - Nextjs 14 (App Router)
@@ -51,4 +52,4 @@ this can help you modify your data in vercel without using SQL in simple cases.
    Finally, use library like [p-retry](https://github.com/sindresorhus/p-retry 'p-retry') to handle refetch part,
    and produce shoertened URL without OG info as an alternative.
 
-4. Owing to [pg_cron extension is not supported](https://vercel.com/docs/storage/vercel-postgres/supported-postgresql-extensions#exceptions 'vercel/postgres exceptions'), use [cron jobs](https://vercel.com/docs/cron-jobs# 'vercel cron jobs') to simulate your schedule if needed.
+4. Owing to [pg_cron extension is not supported](https://vercel.com/docs/storage/vercel-postgres/supported-postgresql-extensions#exceptions 'vercel/postgres exceptions'), use [cron jobs](https://vercel.com/docs/cron-jobs# 'vercel cron jobs') to simulate your schedule regularly if needed.

@@ -2,7 +2,7 @@ import 'server-only';
 import { NextRequest } from 'next/server';
 import { deleteExpiredUrls } from '@/src/api/server';
 
-export const DELETE = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   const header = req.headers.get('authorization');
   if (header !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', {
