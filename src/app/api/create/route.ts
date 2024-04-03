@@ -71,7 +71,7 @@ export const POST = async (req: NextRequest) => {
       {
         err,
         message:
-          'error occured during transaction, operation has been rolled back',
+          'error occured during transaction, operations have been rollbacked',
       },
       { status: 500 }
     );

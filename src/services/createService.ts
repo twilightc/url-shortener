@@ -19,13 +19,13 @@ export const checkIfCanGenrateNewUrl = async (ipAddress: string) => {
       dataAnalyticId: findResult.id,
     },
     orderBy: {
-      createDate: 'desc',
+      createTime: 'desc',
     },
   });
 
   const currentTime = dayjs(new Date());
   const matchedUrls = shortUrls.filter(
-    (info) => currentTime.diff(dayjs(info.createDate), 'day') < 1
+    (info) => currentTime.diff(dayjs(info.createTime), 'day') < 1
   );
 
   return matchedUrls.length < GENERATE_UPPERBOUND;
@@ -38,7 +38,7 @@ export const createShortUrl = async (
 ) => {
   const { shortUrlCode, fullShortenUrl } = generateShortUrl(host);
 
-  return await prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx) => {
     const existedUrl = await tx.shortenedUrl.findFirst({
       where: {
         originalUrl: url,
@@ -90,13 +90,15 @@ export const createShortUrl = async (
       });
     }
 
+    const currentTime = new Date();
+    const expireTime = dayjs(currentTime).add(1, 'd').toDate();
     const newShortUrl = await tx.shortenedUrl.create({
       data: {
         shortenedUrl: fullShortenUrl,
         urlCode: shortUrlCode,
         originalUrl: url,
-        createDate: new Date(),
-        expireDate: dayjs(new Date()).add(1, 'd').toDate(),
+        createTime: currentTime,
+        expireTime,
         DataAnalytic: {
           connect: {
             id: dataAnalytic?.id,
@@ -118,6 +120,8 @@ export const createShortUrl = async (
           title: rawOgData?.ogTitle ?? '',
           siteName: rawOgData?.ogSiteName ?? '',
           description: rawOgData?.ogDescription ?? '',
+          createTime: currentTime,
+          expireTime,
           image: (rawOgData?.ogImage ?? []).at(0)?.url ?? '',
           ShortenedUrl: {
             connect: {

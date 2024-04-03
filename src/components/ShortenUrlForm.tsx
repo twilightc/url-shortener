@@ -53,8 +53,8 @@ export default function ShortenUrlForm() {
         shortenedUrl: string;
         urlCode: string;
         originalUrl: string;
-        createDate: Date;
-        expireDate: Date;
+        createTime: Date;
+        expireTime: Date;
         dataAnalyticId: string;
         ogInfo: {
           url: string;

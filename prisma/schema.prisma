@@ -20,10 +20,10 @@ model ShortenedUrl {
   shortenedUrl   String
   urlCode        String        @unique
   originalUrl    String
-  createDate     DateTime
-  expireDate     DateTime
+  createTime     DateTime
+  expireTime     DateTime
   OpenGraphTag   OpenGraphTag?
-  DataAnalytic   DataAnalytic  @relation(fields: [dataAnalyticId], references: [id])
+  DataAnalytic   DataAnalytic  @relation(fields: [dataAnalyticId], references: [id], onDelete: Cascade)
   dataAnalyticId String
 }
 
@@ -34,6 +34,8 @@ model OpenGraphTag {
   description    String
   image          String
   siteName       String
-  ShortenedUrl   ShortenedUrl @relation(fields: [shortenedUrlId], references: [id])
+  createTime     DateTime
+  expireTime     DateTime
+  ShortenedUrl   ShortenedUrl @relation(fields: [shortenedUrlId], references: [id], onDelete: Cascade)
   shortenedUrlId String       @unique
 }
