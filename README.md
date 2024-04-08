@@ -1,6 +1,6 @@
 # URL-Shortener
 
-### [Demo](https://test-url-shortener.vercel.app/ 'shorturl demo')
+### [Demo](https://tus030.vercel.app/ 'shorturl demo')
 
 A simple URL shortener built with Next.js 14.
 ![alt text](/src/assets/imgs/image.png)

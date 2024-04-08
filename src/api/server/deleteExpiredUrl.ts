@@ -4,11 +4,11 @@ export async function deleteExpiredUrls() {
   try {
     return prisma.$transaction(async (tx) => {
       const currentTime = new Date();
-      // only for DEVELOPMENT test
+
       const expiredUrls = await tx.shortenedUrl.findMany({
         where: {
           expireTime: {
-            gt: currentTime,
+            lt: currentTime,
           },
         },
       });
@@ -16,7 +16,7 @@ export async function deleteExpiredUrls() {
       await tx.shortenedUrl.deleteMany({
         where: {
           expireTime: {
-            gt: currentTime,
+            lt: currentTime,
           },
         },
       });
